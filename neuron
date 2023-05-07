@@ -1,0 +1,135 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Platform
+{
+	public class Neuron
+	{
+		public Neuron(int QuanOfWei = 10)
+		{
+			Array.Resize(ref weights, QuanOfWei);
+			Array.Resize(ref LastError, QuanOfWei);
+
+			initWeigRand();
+		}
+
+		private void initWeigRand()
+		{
+			Random rnd = new Random();
+
+			for (int w = 0; w < weights.Length; ++w)
+			{
+				weights[w] = rnd.NextDouble()-0.5;
+			}
+		}
+		private static int Q_WEIGHTS = 1;
+
+		private double[] weights = new double[Q_WEIGHTS];
+
+		public double[] LastError = new double[Q_WEIGHTS];
+
+		public double Output = 0;
+
+		public double OutSum = 0;
+
+		private static float activFunc(double value, int NumFunc = 1)
+		{
+			if (NumFunc == 1)
+			{
+				return (float)(1.0 / (1.0 + Math.Pow(Math.E, -value)));
+			}
+			else if (NumFunc == 2)
+			{
+				return (float)Math.Tanh(value);
+			}
+
+			return (float)1.0;
+		}
+
+		public void input(Neuron[] In)
+		{
+			double Sum = 0;
+
+			for (int w = 0; w < weights.Length; ++w)
+			{
+				for (int i = 0; i < In.Length; ++i)
+				{
+					Sum += In[i].Output * weights[w];
+				}
+			}
+
+			OutSum = Sum;
+			Output = activFunc(Sum);
+		}
+		
+		
+		public void input(double[] In)
+		{
+			double Sum = 0;
+
+			for (int w = 0; w < weights.Length; ++w)
+			{
+				for (int i = 0; i < In.Length; ++i)
+				{
+					Sum += In[i] * weights[w];
+				}
+			}
+
+			OutSum = Sum;
+			Output = activFunc(Sum);
+		}
+
+
+
+		public void correctWeights(Neuron[] inNeuron, double CurrentError, int isHidden = 0)
+		{
+
+			double WeightSum = 0;
+
+			for (int w = 0; w < weights.Length; ++w)
+			{
+				WeightSum += weights[w];
+			}
+
+
+			for (int w = 0; w < weights.Length; ++w)
+			{
+				if (isHidden == 1)
+				{
+					weights[w] -= LastError[w] * weights[w] / WeightSum;
+				
+				}
+				else
+				{
+					weights[w] -= CurrentError * weights[w] / WeightSum;
+
+					for (int i = 0; i < inNeuron.Length; ++i)
+					{
+						for (int le = 0; le < inNeuron[i].LastError.Length; ++le)
+						{
+							inNeuron[i].LastError[le] = weights[w];
+						}
+					}
+
+				}
+			}
+
+		}
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
