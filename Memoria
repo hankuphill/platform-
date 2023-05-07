@@ -1,0 +1,28 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace Platform
+{
+    public class Memoria 
+    {         
+        private Queue<double[]> store = new Queue<double[]>();
+        
+        public int Counter =0;
+        
+        public void push (double [] In)
+        {
+        	store.Enqueue(In);
+        	++Counter;
+        }
+        public double[] pop()
+        {
+        	--Counter;
+        	return store.Dequeue();
+        }
+        public double[] peek ()
+        {
+        	return store.Peek();
+        }
+    }
+}
